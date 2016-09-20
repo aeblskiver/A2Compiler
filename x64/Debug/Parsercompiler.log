@@ -1,0 +1,4 @@
+﻿  main.cpp
+c:\users\justi\onedrive\documents\compiler\compiler2\parsercompiler\parser.h(183): warning C4715: 'Parser::findColumn': not all control paths return a value
+  Parsercompiler.vcxproj -> C:\Users\justi\OneDrive\Documents\Compiler\Compiler2\x64\Debug\Parsercompiler.exe
+  Parsercompiler.vcxproj -> C:\Users\justi\OneDrive\Documents\Compiler\Compiler2\x64\Debug\Parsercompiler.pdb (Partial PDB)

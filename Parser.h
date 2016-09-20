@@ -1,0 +1,196 @@
+#pragma once
+
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstring>
+
+using namespace std;
+struct Token
+{	 
+	string token;
+	int id;
+	int lineNumber;
+};
+
+class Parser
+{
+public:
+	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
+		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
+	const int accStates[15] = {-1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
+
+	int stateTable[39][23];
+	vector<Token> tokens;
+	int lineNumber = 1;
+	int tokenCount = 0;
+		
+	void Parse()
+		{
+
+		}
+	//Adds a new token to the array
+	void AddToken(string token, int id)
+		{
+			tokens.emplace_back(Token());		
+			tokens[tokenCount].id = id;
+			tokens[tokenCount].token = token;
+			tokens[tokenCount].lineNumber = lineNumber;
+			tokenCount++;
+		}
+
+	//prints out a list of all the tokens and info associated with them.
+	void PrintTokens()
+	{
+		for (int i = 0; i < tokenCount; i++)
+		{
+			cout << "(Tok: ";// +;
+			cout << tokens[i].id;
+			cout << string(" line: ") + to_string(tokens[i].lineNumber) + " str= " + tokens[i].token << endl;
+		}
+	}
+
+
+	void scanFile(string fileName)
+	{
+		string textLine;
+
+		ifstream srcFile;
+		srcFile.open(fileName);
+
+		while (getline(srcFile, textLine))
+		{
+			next_token(textLine);
+			lineNumber++;
+		}
+	}
+
+	//Scans input file and grabs tokens
+	void next_token(string textLine)
+	{
+		char cc;		//Current character
+		int state = 0;	//State table row
+		int col;		//State table column
+		int start = 0;
+		int current = 0;
+		string lexeme;
+
+		cc = textLine[current];
+		while (state != -1)
+		{
+			cc = textLine[current];				//Current character
+			if (cc == '\0' || cc == '\n')		//Check for end of file or end of string
+			{
+				state = -1;
+			}									
+			else
+			{
+				if (isalpha(cc) || cc == '_') col = 0;
+				else if (isdigit(cc))		  col = 1;
+				else col = findColumn(cc);
+				state = changeTableState(state, col);	//Change state
+			}
+
+			if (isAccepting(state))
+			{
+				lexeme = textLine.substr(start, current - start);
+				AddToken(lexeme, state);
+				start = current;
+				//if (state < 7 ? current-- : current++);
+				current--;
+				if (state == -1)
+					AddToken("\n", 1);
+				(state == -1 ? state = -1 : state = 0);
+				
+			}
+			current++;
+			/*switch (state){
+			//End of ID
+			case -1:
+				AddToken("\n", 1);
+				break;
+			case 3://END OF ID
+				lexeme = textLine.substr(start,current); //Grab token from start pointer to current
+				AddToken(lexeme, 1);
+				//Need to search for keyword.
+				current--;
+				state = 1;
+				break;
+			case 6://END OF INT
+				lexeme = textLine.substr(start, current);
+				AddToken(lexeme, 2);
+				current--;
+				state = 1;
+				break;
+			case 36:
+				lexeme = textLine.substr(start, current - start);
+				AddToken(lexeme, 1);
+				current++;
+				start = current;
+				state = 0;
+				break;
+			default:
+				current++;
+				break;
+				
+			}*/
+			(state == 0 ? start = current : start = start);
+
+		}
+		
+	}
+	
+	//Populating table with data
+	void loadTable()
+	{
+		ifstream tableFile;
+		tableFile.open("FStbl.txt");
+		if (tableFile) std::cout << "Successfully loaded state transition table" << endl;
+		for (int i = 0; i < 39; i++)
+		{
+			for (int j = 0; j < 23; j++)
+			{
+				tableFile >> stateTable[i][j];
+			}
+		}
+		tableFile.close();
+	}
+
+	//Get new Table state
+	int changeTableState(int row, int col)
+	{
+		try {
+			return stateTable[row][col];
+		}
+		catch (std::out_of_range& value)
+		{
+			std::cerr << "Out of range";
+			std::cerr << value.what() << endl;
+			std::abort();
+		}
+	}
+
+	//Find column index
+	//Index is offset by two due to letters and digits taking first two columns in state table
+	int findColumn(char c)
+	{
+		for (int i = 0; i < sizeof(tblColumn); i++)
+		{
+			if (tblColumn[i] == c)
+				return i+2;
+		}
+	}
+	
+	//See if the state is an accepting state or not
+	bool isAccepting(int state)
+	{
+		for (int i = 0; i < 15; i++)
+		{
+			if (accStates[i] == state)
+				return true;
+		}
+		return false;
+	}
+
+};
