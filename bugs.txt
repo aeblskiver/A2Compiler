@@ -1,0 +1,2 @@
+1. Reading spaces
+2. Not reading '/'
