@@ -1,2 +1,7 @@
 1. Reading spaces
 2. Not reading '/'
+3. Need peekahead so characters don't go into accepting state early
+4. Comments
+
+TODO:
+1. Add keywords
