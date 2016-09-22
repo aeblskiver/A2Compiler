@@ -25,24 +25,7 @@ public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
 	const int accStates[15] = {-1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
-	string keyWordList[15] = {
-									{"prog"}
-									,{"main"}
-									,{"fcn"}
-									,{"class"}
-									,{"float"}
-									,{"int"}
-									,{"string"}
-									,{"if"}
-									,{"elseif"}
-									,{"else"}
-									,{"while"}
-									,{"input"}
-									,{"print"}
-									,{"new"}
-									,{"return"}
-								};
-	//vector<string>keyWordList;
+
 
 	int stateTable[39][23];
 	vector<Token> tokens;
