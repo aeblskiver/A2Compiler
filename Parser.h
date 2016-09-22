@@ -13,6 +13,11 @@ struct Token
 	int id;
 	int lineNumber;
 };
+struct Keyword
+{
+	string key;
+	int id;
+};
 
 class Parser
 {
@@ -20,14 +25,47 @@ public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
 	const int accStates[15] = {-1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
+	string keyWordList[15] = {
+									{"prog"}
+									,{"main"}
+									,{"fcn"}
+									,{"class"}
+									,{"float"}
+									,{"int"}
+									,{"string"}
+									,{"if"}
+									,{"elseif"}
+									,{"else"}
+									,{"while"}
+									,{"input"}
+									,{"print"}
+									,{"new"}
+									,{"return"}
+								};
+	//vector<string>keyWordList;
 
 	int stateTable[39][23];
 	vector<Token> tokens;
+	vector<Keyword> keyList;
 	int lineNumber = 1;
 	int tokenCount = 0;
 		
-	void Parse()
+		Parser()
 		{
+			ifstream keys;
+			keys.open("Keywords.txt");
+			if (!keys)
+				cout << "ERROR OPENING FILE!!!";
+			while (!keys.eof())
+				{
+					string keyS, idS;
+					keyList.emplace_back(Keyword());
+					keys >> keyS; //keyList[keyList.size - 1].key;
+					keys >> idS; //keyList[keyList.size - 1].id				
+					keyList[keyList.size() - 1].key=keyS;
+					keyList[keyList.size() - 1].id = stoi(idS);
+
+			}
 
 		}
 	//Adds a new token to the array
@@ -86,9 +124,14 @@ public:
 			}									
 			else
 			{
-				if (isalpha(cc) || cc == '_') col = 0;
+				if (isalpha(cc) || cc == '_')
+				{
+					current=KeywordCheck(textLine, current);
+					continue;
+				}
 				else if (isdigit(cc))		  col = 1;
 				else col = findColumn(cc);
+				cout << "state= " << state << " " << col;
 				state = changeTableState(state, col);	//Change state
 			}
 
@@ -139,6 +182,38 @@ public:
 
 		}
 		
+	}
+
+	//Upon reading in an alpha, check the entire resulting string until a delimiter and compare against keyword list. 
+	int KeywordCheck(string line,int current)
+	{
+		cout << "entered keywordCheck";
+		int cur = current;
+		string token="";
+		while (true)
+		{
+			if (isalnum(line[cur]))
+				token = token + line[cur];
+			else
+				break;
+			cur++;
+		}
+		
+		//check token against keyword list. If match found, add to token list as that keyword, else add as an identifier
+		//then return with new cursor position. 
+		for (int i = 0;i < keyList.size();i++)
+		{
+		   if (token==keyList[i].key)
+			{
+				
+				AddToken(keyList[i].key,keyList[i].id);
+				return cur;
+			}
+		}
+		
+		AddToken(token, 2);
+		return cur;
+
 	}
 	
 	//Populating table with data

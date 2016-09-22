@@ -1,0 +1,15 @@
+prog	10
+main	11
+fcn	12
+class	13
+float	15
+int	16
+string	17
+if	18
+elseif	19
+else	20
+while	21
+input	22
+print	23
+new	24
+return	25
