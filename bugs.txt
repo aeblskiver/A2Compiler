@@ -5,4 +5,6 @@
 5. Currently Keywords are read into the token list twice. 
 
 TODO:
+1. process comments
+2. process strings
 
