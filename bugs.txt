@@ -7,4 +7,4 @@
 TODO:
 1. process comments
 2. process strings
-
+3. Prevent spaces from being read in as tokens. 
