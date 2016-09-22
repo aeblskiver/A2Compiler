@@ -2,6 +2,7 @@
 2. Not reading '/'
 3. Need peekahead so characters don't go into accepting state early
 4. Comments
+5. Currently Keywords are read into the token list twice. 
 
 TODO:
-1. Add keywords
+
