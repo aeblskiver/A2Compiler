@@ -110,11 +110,17 @@ public:
 				if (isalpha(cc) || cc == '_')
 				{
 					current=KeywordCheck(textLine, current);
+					start = current;
+					continue;
+				}
+				else if (cc == '\"')
+				{
+					current=StringRead(textLine, current);
 					continue;
 				}
 				else if (isdigit(cc))		  col = 1;
 				else col = findColumn(cc);
-				cout << "state= " << state << " " << col;
+				//cout << "state= " << state << " " << col;
 				state = changeTableState(state, col);	//Change state
 			}
 
@@ -131,40 +137,28 @@ public:
 				
 			}
 			current++;
-			/*switch (state){
-			//End of ID
-			case -1:
-				AddToken("\n", 1);
-				break;
-			case 3://END OF ID
-				lexeme = textLine.substr(start,current); //Grab token from start pointer to current
-				AddToken(lexeme, 1);
-				//Need to search for keyword.
-				current--;
-				state = 1;
-				break;
-			case 6://END OF INT
-				lexeme = textLine.substr(start, current);
-				AddToken(lexeme, 2);
-				current--;
-				state = 1;
-				break;
-			case 36:
-				lexeme = textLine.substr(start, current - start);
-				AddToken(lexeme, 1);
-				current++;
-				start = current;
-				state = 0;
-				break;
-			default:
-				current++;
-				break;
-				
-			}*/
+			
 			(state == 0 ? start = current : start = start);
 
 		}
 		
+	}
+
+	int StringRead(string line, int current)
+	{
+		int cur = current+1;
+		string token = "";
+		while (true)
+		{
+			//cout << endl << line<< endl;
+			if (line[cur] != '\"')
+				token = token + line[cur];
+			else
+				break;
+			cur++;
+		}
+		AddToken(token, 5);
+		return cur+1;
 	}
 
 	//Upon reading in an alpha, check the entire resulting string until a delimiter and compare against keyword list. 
