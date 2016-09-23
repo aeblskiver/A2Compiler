@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <unordered_map>
 
 using namespace std;
 struct Token
@@ -25,6 +26,9 @@ public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
 	const int accStates[15] = {-1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
+	std::unordered_map<string,int> opList;
+	
+
 
 
 	int stateTable[39][23];
@@ -104,7 +108,11 @@ public:
 			if (cc == '\0' || cc == '\n')		//Check for end of file or end of string
 			{
 				state = -1;
-			}									
+			}	
+			if (state == 23)
+			{
+				break;
+			}
 			else
 			{
 				if (isalpha(cc) || cc == '_')
@@ -116,6 +124,7 @@ public:
 				else if (cc == '\"')
 				{
 					current=StringRead(textLine, current);
+					start = current;
 					continue;
 				}
 				else if (isdigit(cc))		  col = 1;
@@ -164,7 +173,7 @@ public:
 	//Upon reading in an alpha, check the entire resulting string until a delimiter and compare against keyword list. 
 	int KeywordCheck(string line,int current)
 	{
-		cout << "entered keywordCheck";
+		//cout << "entered keywordCheck";
 		int cur = current;
 		string token="";
 		while (true)
@@ -244,5 +253,27 @@ public:
 		}
 		return false;
 	}
+	/*
+	void loadOpList()
+	{
+		ifstream opFile;
+		string op;
+		int junk;
+		opFile.open("opperator_delimiter List.txt");
+		if (opFile) std::cout << "Successfully loaded table" << endl;
+		for (int i = 0; i < 25; i++)
+		{
+			opFile >> op >> junk;
+			opList.emplace(op,junk);
+		}
+		opFile.close();
+	}
 
+	int getOpID(string oper)
+	{
+		std::unordered_map<std::string, int>::const_iterator got = opList.find(oper);
+		return got->second;
+
+	}
+	*/
 };
