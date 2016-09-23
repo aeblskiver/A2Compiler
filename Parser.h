@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <unordered_map>
 
 using namespace std;
 struct Token
@@ -25,7 +26,9 @@ public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
 	const int accStates[15] = { -1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
-
+	const std::unordered_map<string, int> opList = { { ",",6 },{ ";",7 },{ "<",31 },{ ">",32 },{ "{",33 },{ "}",34 },
+	{ "[",35 },{ "]",36 },{ "(",37 },{ ")",38 },{ "*",41 },{ "^",42 },{ ":",43 },{ ".",44 },{ "=",45 },{ "-",46 },
+	{ "+",47 },{ "/",48 },{ "->",51 },{ "==",52 },{ "!=",53 },{ "<=",54 },{ ">=",55 },{ "<<",56 },{ ">>",57 } };
 
 	int stateTable[39][23];
 	vector<Token> tokens;
@@ -85,6 +88,7 @@ public:
 			next_token(textLine);
 			lineNumber++;
 		}
+		AddToken("EOF", 0);  //End of file token
 	}
 
 	//Scans input file and grabs tokens
@@ -133,13 +137,11 @@ public:
 			if (isAccepting(state))
 			{
 				lexeme = textLine.substr(start, current - start);
-				AddToken(lexeme, state);
+				if (state < 7 && state > 0) AddToken(lexeme, state);	//If it's an identifier, int or float
+				else AddToken(lexeme, getOpID(lexeme));					//For delimiters, operators, and other punctuation
 				start = current;
-				//if (state < 7 ? current-- : current++);
 				current--;
-				if (state == -1)
-					AddToken("\n", 1);
-				(state == -1 ? state = -1 : state = 0);
+				(state == -1 ? state = -1 : state = 0); //Check for end of line and reset start
 
 			}
 			current++;
@@ -252,4 +254,9 @@ public:
 		return false;
 	}
 
+	//Returns the key value specified in the map
+	int getOpID(string op)
+	{
+		return opList.find(op)->second;
+	}
 };
