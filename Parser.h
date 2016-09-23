@@ -81,8 +81,7 @@ public:
 		srcFile.open(fileName);
 
 		while (getline(srcFile, textLine))
-		{
-			cout << endl << textLine << endl;
+		{			
 			next_token(textLine);
 			lineNumber++;
 		}
@@ -163,7 +162,7 @@ public:
 			else
 				break;
 			cur++;
-		}
+		}		
 		AddToken(token, 5);
 		return cur + 1;
 	}
@@ -185,7 +184,7 @@ public:
 
 		//check token against keyword list. If match found, add to token list as that keyword, else add as an identifier
 		//then return with new cursor position. 
-		for (int i = 0;i < keyList.size();i++)
+		for (size_t i = 0;i < keyList.size();i++)
 		{
 			if (token == keyList[i].key)
 			{
@@ -239,6 +238,7 @@ public:
 			if (tblColumn[i] == c)
 				return i + 2;
 		}
+		return 0;
 	}
 
 	//See if the state is an accepting state or not
