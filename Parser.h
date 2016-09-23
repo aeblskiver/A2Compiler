@@ -5,11 +5,10 @@
 #include <string>
 #include <vector>
 #include <cstring>
-#include <unordered_map>
 
 using namespace std;
 struct Token
-{	 
+{
 	string token;
 	int id;
 	int lineNumber;
@@ -25,10 +24,7 @@ class Parser
 public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
-	const int accStates[15] = {-1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
-	std::unordered_map<string,int> opList;
-	
-
+	const int accStates[15] = { -1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
 
 
 	int stateTable[39][23];
@@ -36,34 +32,34 @@ public:
 	vector<Keyword> keyList;
 	int lineNumber = 1;
 	int tokenCount = 0;
-		
-		Parser()
-		{
-			ifstream keys;
-			keys.open("Keywords.txt");
-			if (!keys)
-				cout << "ERROR OPENING FILE!!!";
-			while (!keys.eof())
-				{
-					string keyS, idS;
-					keyList.emplace_back(Keyword());
-					keys >> keyS; //keyList[keyList.size - 1].key;
-					keys >> idS; //keyList[keyList.size - 1].id				
-					keyList[keyList.size() - 1].key=keyS;
-					keyList[keyList.size() - 1].id = stoi(idS);
 
-			}
+	Parser()
+	{
+		ifstream keys;
+		keys.open("Keywords.txt");
+		if (!keys)
+			cout << "ERROR OPENING FILE!!!";
+		while (!keys.eof())
+		{
+			string keyS, idS;
+			keyList.emplace_back(Keyword());
+			keys >> keyS; //keyList[keyList.size - 1].key;
+			keys >> idS; //keyList[keyList.size - 1].id				
+			keyList[keyList.size() - 1].key = keyS;
+			keyList[keyList.size() - 1].id = stoi(idS);
 
 		}
+
+	}
 	//Adds a new token to the array
 	void AddToken(string token, int id)
-		{
-			tokens.emplace_back(Token());		
-			tokens[tokenCount].id = id;
-			tokens[tokenCount].token = token;
-			tokens[tokenCount].lineNumber = lineNumber;
-			tokenCount++;
-		}
+	{
+		tokens.emplace_back(Token());
+		tokens[tokenCount].id = id;
+		tokens[tokenCount].token = token;
+		tokens[tokenCount].lineNumber = lineNumber;
+		tokenCount++;
+	}
 
 	//prints out a list of all the tokens and info associated with them.
 	void PrintTokens()
@@ -86,6 +82,7 @@ public:
 
 		while (getline(srcFile, textLine))
 		{
+			cout << endl << textLine << endl;
 			next_token(textLine);
 			lineNumber++;
 		}
@@ -108,22 +105,23 @@ public:
 			if (cc == '\0' || cc == '\n')		//Check for end of file or end of string
 			{
 				state = -1;
-			}	
-			if (state == 23)
-			{
-				break;
 			}
+			
 			else
 			{
 				if (isalpha(cc) || cc == '_')
 				{
-					current=KeywordCheck(textLine, current);
+					current = KeywordCheck(textLine, current);
 					start = current;
 					continue;
 				}
+				else if (cc == '/' && textLine[current + 1] == '/')
+				{
+					break;
+				}
 				else if (cc == '\"')
 				{
-					current=StringRead(textLine, current);
+					current = StringRead(textLine, current);
 					start = current;
 					continue;
 				}
@@ -143,19 +141,19 @@ public:
 				if (state == -1)
 					AddToken("\n", 1);
 				(state == -1 ? state = -1 : state = 0);
-				
+
 			}
 			current++;
-			
+
 			(state == 0 ? start = current : start = start);
 
 		}
-		
+
 	}
 
 	int StringRead(string line, int current)
 	{
-		int cur = current+1;
+		int cur = current + 1;
 		string token = "";
 		while (true)
 		{
@@ -167,15 +165,15 @@ public:
 			cur++;
 		}
 		AddToken(token, 5);
-		return cur+1;
+		return cur + 1;
 	}
 
 	//Upon reading in an alpha, check the entire resulting string until a delimiter and compare against keyword list. 
-	int KeywordCheck(string line,int current)
+	int KeywordCheck(string line, int current)
 	{
 		//cout << "entered keywordCheck";
 		int cur = current;
-		string token="";
+		string token = "";
 		while (true)
 		{
 			if (isalnum(line[cur]))
@@ -184,24 +182,24 @@ public:
 				break;
 			cur++;
 		}
-		
+
 		//check token against keyword list. If match found, add to token list as that keyword, else add as an identifier
 		//then return with new cursor position. 
 		for (int i = 0;i < keyList.size();i++)
 		{
-		   if (token==keyList[i].key)
+			if (token == keyList[i].key)
 			{
-				
-				AddToken(keyList[i].key,keyList[i].id);
+
+				AddToken(keyList[i].key, keyList[i].id);
 				return cur;
 			}
 		}
-		
+
 		AddToken(token, 2);
 		return cur;
 
 	}
-	
+
 	//Populating table with data
 	void loadTable()
 	{
@@ -239,10 +237,10 @@ public:
 		for (int i = 0; i < sizeof(tblColumn); i++)
 		{
 			if (tblColumn[i] == c)
-				return i+2;
+				return i + 2;
 		}
 	}
-	
+
 	//See if the state is an accepting state or not
 	bool isAccepting(int state)
 	{
@@ -253,27 +251,5 @@ public:
 		}
 		return false;
 	}
-	/*
-	void loadOpList()
-	{
-		ifstream opFile;
-		string op;
-		int junk;
-		opFile.open("opperator_delimiter List.txt");
-		if (opFile) std::cout << "Successfully loaded table" << endl;
-		for (int i = 0; i < 25; i++)
-		{
-			opFile >> op >> junk;
-			opList.emplace(op,junk);
-		}
-		opFile.close();
-	}
 
-	int getOpID(string oper)
-	{
-		std::unordered_map<std::string, int>::const_iterator got = opList.find(oper);
-		return got->second;
-
-	}
-	*/
 };
