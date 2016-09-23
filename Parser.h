@@ -25,10 +25,10 @@ class Parser
 public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
-	const int accStates[15] = { -1, 2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
+	const int accStates[15] = {  -1,2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
 	const std::unordered_map<string, int> opList = { { ",",6 },{ ";",7 },{ "<",31 },{ ">",32 },{ "{",33 },{ "}",34 },
 	{ "[",35 },{ "]",36 },{ "(",37 },{ ")",38 },{ "*",41 },{ "^",42 },{ ":",43 },{ ".",44 },{ "=",45 },{ "-",46 },
-	{ "+",47 },{ "/",48 },{ "->",51 },{ "==",52 },{ "!=",53 },{ "<=",54 },{ ">=",55 },{ "<<",56 },{ ">>",57 } };
+	{ "+",47 },{ "/",48 },{ "->",51 },{ "==",52 },{ "!=",53 },{ "<=",54 },{ ">=",55 },{ "<<",56 },{ ">>",57 }};
 
 	int stateTable[39][23];
 	vector<Token> tokens;
@@ -88,7 +88,11 @@ public:
 			next_token(textLine);
 			lineNumber++;
 		}
-		AddToken("EOF", 0);  //End of file token
+		if (srcFile.eof())
+		{
+			--lineNumber;
+			AddToken("", 0);
+		}
 	}
 
 	//Scans input file and grabs tokens
@@ -136,8 +140,10 @@ public:
 
 			if (isAccepting(state))
 			{
+				
 				lexeme = textLine.substr(start, current - start);
-				if (state < 7 && state > 0) AddToken(lexeme, state);	//If it's an identifier, int or float
+				cout << "Lexeme: " << lexeme << endl;
+				if (state < 7 && state > 0) AddToken(lexeme, getID(state));	//If it's an identifier, int or float
 				else AddToken(lexeme, getOpID(lexeme));					//For delimiters, operators, and other punctuation
 				start = current;
 				current--;
@@ -254,9 +260,22 @@ public:
 		return false;
 	}
 
+	//Gets proper IDs for floats and ints
+	int getID(int state)
+	{
+		switch (state) {
+		case 5:
+			return 3;
+		case 6:
+			return 4;
+		default:
+			return state;
+		}
+	}
 	//Returns the key value specified in the map
 	int getOpID(string op)
 	{
-		return opList.find(op)->second;
+		if (opList.count(op) == 0) return 99; //ERROR, unknown token
+		else return opList.find(op)->second;
 	}
 };
