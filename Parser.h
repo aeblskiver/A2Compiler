@@ -1,5 +1,13 @@
 #pragma once
 
+/*
+	CPSC 323 Project #1: Lexer
+	The parser class is responsible for scanning a text file and tokenizing the input.
+
+	@author Chris Leonardi, Justin Shelley
+	@version 1.0 9/23/2016
+*/
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -8,27 +16,35 @@
 #include <unordered_map>
 
 using namespace std;
+
+
+//Struct for token information
 struct Token
 {
 	string token;
 	int id;
 	int lineNumber;
 };
+
+
+//Struct for recognizing keywords
 struct Keyword
 {
 	string key;
 	int id;
 };
 
+
+//Parser class for tokenizing input
 class Parser
 {
 public:
 	const char tblColumn[21] = { '_', '.', ',', ';','<','>','+','-','*','/','^',':',
 		'{','}','[',']','(',')','!','=',' ' };//Used to check which column to set for state transition table
-	const int accStates[15] = {  -1,2,5,6,11,12,14,15,16,18,20,35,36,37,38 };
+	const int accStates[15] = {  -1,2,5,6,11,12,14,15,16,18,20,35,36,37,38 }; //List of accepting states
 	const std::unordered_map<string, int> opList = { { ",",6 },{ ";",7 },{ "<",31 },{ ">",32 },{ "{",33 },{ "}",34 },
 	{ "[",35 },{ "]",36 },{ "(",37 },{ ")",38 },{ "*",41 },{ "^",42 },{ ":",43 },{ ".",44 },{ "=",45 },{ "-",46 },
-	{ "+",47 },{ "/",48 },{ "->",51 },{ "==",52 },{ "!=",53 },{ "<=",54 },{ ">=",55 },{ "<<",56 },{ ">>",57 }};
+	{ "+",47 },{ "/",48 },{ "->",51 },{ "==",52 },{ "!=",53 },{ "<=",54 },{ ">=",55 },{ "<<",56 },{ ">>",57 }}; //For token IDs
 
 	int stateTable[39][23];
 	vector<Token> tokens;
@@ -36,6 +52,12 @@ public:
 	int lineNumber = 1;
 	int tokenCount = 0;
 
+	/*
+	    Default constructor
+		 Initializes key word list by reading in from Keywords.txt
+
+		 @author Chris Leonardi
+	*/
 	Parser()
 	{
 		ifstream keys;
@@ -50,11 +72,17 @@ public:
 			keys >> idS; //keyList[keyList.size - 1].id				
 			keyList[keyList.size() - 1].key = keyS;
 			keyList[keyList.size() - 1].id = stoi(idS);
-
 		}
-
 	}
-	//Adds a new token to the array
+	
+	/*
+	    AddToken accepts a lexeme and id and adds it to the token list
+
+		 @param token The lexeme that has been tokenized
+		 @param id The ID for the relevant token
+
+		 @author Chris Leonardi
+	*/
 	void AddToken(string token, int id)
 	{
 		tokens.emplace_back(Token());
@@ -64,7 +92,10 @@ public:
 		tokenCount++;
 	}
 
-	//prints out a list of all the tokens and info associated with them.
+	/*
+		Prints out a list of all the tokens and info associated with them.
+		@author Chris Leonardi
+	*/
 	void PrintTokens()
 	{
 		for (int i = 0; i < tokenCount; i++)
@@ -75,7 +106,11 @@ public:
 		}
 	}
 
-
+	/*
+	    Load a text file and scan line by line for tokens
+		 @param fileName The name of the file to be read
+		 @author Justin Shelley
+	*/
 	void scanFile(string fileName)
 	{
 		string textLine;
@@ -95,7 +130,11 @@ public:
 		}
 	}
 
-	//Scans input file and grabs tokens
+	/*
+	    Scans input file and grabs tokens
+		 @param textLine The line that has been grabbed from the file 
+		 @author Justin Shelley and Chris Leonardi
+	*/
 	void next_token(string textLine)
 	{
 		char cc;		//Current character
@@ -158,13 +197,19 @@ public:
 
 	}
 
+	/*
+	    Reads a lexeme that has been identified as being part of a string
+		 @param line The string lexeme
+		 @param current The current position in the character string
+		 @return The new position in character string
+		 @author Chris Leonardi
+	*/
 	int StringRead(string line, int current)
 	{
 		int cur = current + 1;
 		string token = "";
 		while (true)
 		{
-			//cout << endl << line<< endl;
 			if (line[cur] != '\"')
 				token = token + line[cur];
 			else
@@ -175,7 +220,13 @@ public:
 		return cur + 1;
 	}
 
-	//Upon reading in an alpha, check the entire resulting string until a delimiter and compare against keyword list. 
+	/*
+	    Checks if identifier is a keyword
+		 @param line The identifier lexeme being checked
+		 @param current The current position in character string
+		 @return The new position in character string
+		 @author Chris Leonardi
+	*/
 	int KeywordCheck(string line, int current)
 	{
 		//cout << "entered keywordCheck";
@@ -207,7 +258,10 @@ public:
 
 	}
 
-	//Populating table with data
+	/*
+	    Initializes the state table with data from text file
+		 @author Justin Shelley
+	*/
 	void loadTable()
 	{
 		ifstream tableFile;
@@ -223,7 +277,12 @@ public:
 		tableFile.close();
 	}
 
-	//Get new Table state
+	/*
+	    Changes the state of the table while scanning characters
+		 @param row Row of state table
+		 @param col Column of state table
+		 @author Justin Shelley
+	*/
 	int changeTableState(int row, int col)
 	{
 		try {
@@ -237,8 +296,13 @@ public:
 		}
 	}
 
-	//Find column index
-	//Index is offset by two due to letters and digits taking first two columns in state table
+	/*
+	    Find column index. Index is offset by two due to letters 
+		 and digits taking first two columns in state table
+		 @param c The character currently being examined
+		 @return The new state of the table
+		 @author Justin Shelley
+	*/
 	int findColumn(char c)
 	{
 		for (int i = 0; i < sizeof(tblColumn); i++)
@@ -249,7 +313,12 @@ public:
 		return 0;
 	}
 
-	//See if the state is an accepting state or not
+	/*
+	    Check if the state is an accepting state or not
+		 @param state The current state of the table
+		 @return True if accepting, False if not
+		 @author Justin Shelley
+	*/
 	bool isAccepting(int state)
 	{
 		for (int i = 0; i < 15; i++)
@@ -260,7 +329,12 @@ public:
 		return false;
 	}
 
-	//Gets proper IDs for floats and ints
+	/*
+	    Gets proper IDs for floats and ints. If I had set up state table properly this could have been avoided, oh well!
+		 @param state The current state of the table.
+		 @return the Correct ID for the token
+		 @author Justin Shelley
+	*/
 	int getID(int state)
 	{
 		switch (state) {
@@ -272,7 +346,13 @@ public:
 			return state;
 		}
 	}
-	//Returns the key value specified in the map
+	
+	/*
+	    Checks the lexeme against the list of operators and returns the token ID
+		 @param op The non-keyword token
+		 @return Token ID
+		 @author Justin Shelley
+	*/
 	int getOpID(string op)
 	{
 		if (opList.count(op) == 0) return 99; //ERROR, unknown token
