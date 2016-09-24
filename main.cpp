@@ -8,9 +8,6 @@ void next_token(ifstream);
 
 void main()
 {
-					//The state transition table
-				//File containing state transition table data
-
 	Parser x;
 
 	x.loadTable();

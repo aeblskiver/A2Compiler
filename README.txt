@@ -8,8 +8,7 @@ Features:
 	Tokens are stored in a token struct
 	Tokens are then printed out with information about them
 Known Bugs:
-	Token ID's are not properly recorded for operators and delimiters.
-	Ints are recorded as strings	
+	Some blank strings are read in at the end of the file. 
 
 Usage:
 	In the main, drop the name of the text file you wish to run through lexer

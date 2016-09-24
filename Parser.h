@@ -142,7 +142,7 @@ public:
 			{
 				
 				lexeme = textLine.substr(start, current - start);
-				cout << "Lexeme: " << lexeme << endl;
+				//cout << "Lexeme: " << lexeme << endl;
 				if (state < 7 && state > 0) AddToken(lexeme, getID(state));	//If it's an identifier, int or float
 				else AddToken(lexeme, getOpID(lexeme));					//For delimiters, operators, and other punctuation
 				start = current;
