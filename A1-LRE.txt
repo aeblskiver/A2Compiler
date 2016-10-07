@@ -1,0 +1,33 @@
+Pgm = kwdprg brace1 Slist brace2
+
+Slist = Stmt semi Slist
+Slist = eps
+
+Stmt = S_Asgn
+Stmt = S_in
+Stmt = S_Out
+S_Asgn = id equal E
+S_In = id equal kwdinput
+S_out = kwdprint paren1 Elist paren2
+
+Elist = E Elist2
+Elist = eps
+Elist2 = comma Elist
+
+E = T X1
+X1 = eps
+X1 = Opadd T X1
+T = F X2
+X2 = eps
+X2 = Opmul F X2
+F = Fatom
+F = paren1 E paren2
+Fatom = id
+Fatom = int
+Fatom = float
+Fatom = string
+Opadd = plus
+Opadd = minus
+Opmul = aster
+Opmul = slash
+Opmul = caret

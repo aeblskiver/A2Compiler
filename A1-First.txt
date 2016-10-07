@@ -1,0 +1,15 @@
+F(Pgm)= { kwdprg }
+F(Slist) = { id, kwdprint, eps }
+F(Stmt) = { id, kwdprint }
+F(Y1) = { id, int, float, string, paren1, kwdinput }
+F(S_Out) = { kwdprint } 
+F(Elist) = { id, int, float, string, paren1, eps }
+F(Elist2) = { comma }
+F(E) = { id, int, float, string, paren1 } 
+F(X1) = { eps, plus, minus }
+F(T) = { id, int, float, string, paren1 }
+F(X2) = { eps, aster, slash, caret }
+F(F) = { id, int, float, string, paren1 }
+F(Fatom) = { id, int, float, string }
+F(Opadd) = { plus, minus }
+F(Opmul) = { aster, slash, caret }

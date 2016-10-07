@@ -1,0 +1,15 @@
+Follow(Pgm) = { $ }
+Follow(Slist) = { brace }
+Follow(Stmt) = { semi }
+Follow(Y1) = { semi }
+Follow(S_Out) = { semi }
+Follow(Elist) = { paren2 }
+Follow(Elist2) = { paren2 }
+Follow(E) = { comma, paren2, semi }
+Follow(X1) =  { comma, paren2 }
+Follow(T) = { eps,  plus, minus, comma, paren2, semi }
+Follow(X2) = { eps, plus, minus, comma, paren2, semi } 
+Follow(F) = { aster, slash, caret,plus, minus, comma, paren2, semi }
+Follow(Fatom) = { aster, slash, caret, plus, minus, comma, paren2, semi  }
+FOllow(Opadd) = { id, int, float, string, paren1 }
+Follow(Opmul) = { id, int, float, string, paren1 }
