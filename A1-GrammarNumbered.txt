@@ -1,0 +1,65 @@
+Pgm = (1) kwdprg brace1 Slist brace2
+
+
+
+Slist = (2) Stmt semi Slist
+
+Slist = (3) eps
+
+
+
+Stmt = (4) id equal Y1
+
+Stmt = (5)S_out
+
+Y1 =(6)  E
+
+Y1 = (7) kwdinput
+
+
+
+S_out = (8) kwdprint paren1 Elist paren2
+
+
+
+Elist = (9) E Elist2
+
+Elist = (10) eps
+
+Elist2 = (11) comma Elist
+
+
+
+E = (12) T X1
+
+X1 = (13) eps
+
+X1 = (14) Opadd T X1
+
+T = (15) F X2
+
+X2 = (16) eps
+
+X2 = (17) Opmul F X2
+
+F = (18) Fatom
+
+F = (19) paren1 E paren2
+
+Fatom = (20) id
+
+Fatom = (21) int
+
+Fatom = (22) float
+
+Fatom = (23) string
+
+Opadd = (24) plus
+
+Opadd = (25) minus
+
+Opmul = (26) aster
+
+Opmul = (27) slash
+
+Opmul = (28) caret
