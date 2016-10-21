@@ -20,8 +20,14 @@ $brace2 Slist = a
 $brace2 Slist semi Stmt = a
 $brace2 Slist semi Y1 equal id = a
 $brace2 Slist semi Y1 equal = '='
-$brace2 Slist semi Y1 = input( int );
-$brace2 Slist semi kwdinput = input( int );
+$brace2 Slist semi Y1 = input
+$brace2 Slist semi kwdinput = input
+
+************************************************************
+breaks here because the grammar does not allow for this    *
+( int );                                                   *
+************************************************************
+
 $brace2 Slist semi = ;
 $brace2 Slist = b
 $brace2 Slist semi Stmt = b
