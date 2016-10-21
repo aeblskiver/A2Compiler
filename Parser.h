@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <stack>
 #include <unordered_map>
 
 using namespace std;
@@ -24,6 +25,7 @@ struct Token
 	string token;
 	int id;
 	int lineNumber;
+	
 };
 
 
