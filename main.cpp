@@ -7,7 +7,8 @@
 	 A lexical analyzer for scanning and tokenizing source files. 
 */
 
-#include "Parser.h"
+#include "Lexer.h"
+#include "CParser.h"
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -18,7 +19,8 @@ void next_token(ifstream);
 void main()
 {
 	//Create a parser object to work on files.
-	Parser x;
+	Lexer x;
+	
 	//Load the state table
 	x.loadTable();
 	
@@ -26,9 +28,16 @@ void main()
 	    Example of reading file and printing out the tokens.
 		 You can change the filename here to scan a file of your choosing.
 	*/ 
-	x.scanFile("EX1.txt");
+	x.scanFile("EX1Parse.txt");
 	x.PrintTokens();
 
+	/*
+	Example of Parsing.
+	You can change the filename here to scan a file of your choosing.
+	*/
+	Parser y(x.tokens);
+	y.Machine();
 	system("PAUSE");
+	
 }
 

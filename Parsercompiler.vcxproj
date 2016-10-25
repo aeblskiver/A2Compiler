@@ -110,7 +110,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="Lexer.h" />
+    <ClInclude Include="CParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
