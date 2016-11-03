@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="CParser.h" />
+    <ClInclude Include="Compiler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

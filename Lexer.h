@@ -53,6 +53,9 @@ public:
 	vector<Keyword> keyList;
 	int lineNumber = 1;
 	int tokenCount = 0;
+	int errorcode = 0; //errorcode to be grabbed when exiting on an error
+	string errorFile; //the file related to the error.
+	string output; //string to hold the output string. 
 
 	/*
 	    Default constructor
@@ -62,10 +65,24 @@ public:
 	*/
 	Lexer()
 	{
+		
+	}
+
+	int InitLexer()
+	{
+		//reset lexer values
+		tokens.clear();
+		errorcode = 0;
+
+		loadTable();
+
 		ifstream keys;
 		keys.open("Keywords.txt");
 		if (!keys)
-			cout << "ERROR OPENING FILE!!!";
+		{
+			errorcode = 1;
+			return 0;
+		}
 		while (!keys.eof())
 		{
 			string keyS, idS;
@@ -75,6 +92,8 @@ public:
 			keyList[keyList.size() - 1].key = keyS;
 			keyList[keyList.size() - 1].id = stoi(idS);
 		}
+		keys.close();
+		return 1;
 	}
 	
 	/*
@@ -100,12 +119,15 @@ public:
 	*/
 	void PrintTokens()
 	{
+		
 		for (int i = 0; i < tokenCount; i++)
 		{
+			//output.append("(Tok: "+ tokens[i].id)
 			cout << "(Tok: ";// +;
 			cout << tokens[i].id;
 			cout << string(" line: ") + to_string(tokens[i].lineNumber) + " str= " + tokens[i].token << endl;
 		}
+		
 	}
 
 	/*
@@ -113,7 +135,7 @@ public:
 		 @param fileName The name of the file to be read
 		 @author Justin Shelley
 	*/
-	void scanFile(string fileName)
+	vector<Token> scanFile(string fileName)
 	{
 		string textLine;
 
@@ -130,6 +152,9 @@ public:
 			--lineNumber;
 			AddToken("", 0);
 		}
+		
+		PrintTokens();
+		return tokens;
 	}
 
 	/*

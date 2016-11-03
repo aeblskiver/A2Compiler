@@ -47,8 +47,16 @@ public:
 	
 
 	//The default constructor
-	Parser(vector<Token> tokens)
+	Parser()
 	{
+		
+		
+	}
+
+	int ParserInit(vector<Token> tokens)
+	{
+		if (tokens.empty())
+			return 0;
 		ParserItem eof, pgm;
 		eof.rule = "eof";eof.isToken = true;
 		pgm.rule = "pgm";pgm.isToken = false;pgm.row = 1;
@@ -57,7 +65,14 @@ public:
 
 		//machineStack.push("$");
 		tokenList = tokens;
-		
+
+		//reset the variables
+		posCounter = 0; //keeps track of the position in the tokenList vector
+		//while(!machineStack.empty())
+			//machineStack.pop(); // the stack for the parser
+		passCounter = 0;
+
+		return 1;
 	}
 
 	//Returns the next token in the list and increments the positional cursor
