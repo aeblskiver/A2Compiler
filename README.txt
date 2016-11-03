@@ -44,4 +44,7 @@ Parser.isAccepting()
 Functions worked on by both:
 Parser.next_token()
 
+TODO:
+Justin: Work on parse tree and conversion to AST
+Chris: Work on symbol table
  
