@@ -9,6 +9,7 @@
 
 #include "Lexer.h"
 #include "CParser.h"
+#include "ParseTree.h"
 #include <cassert>
 #include <fstream>
 #include <iostream>

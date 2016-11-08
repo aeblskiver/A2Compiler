@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Lexer.h"
+#include "ParseTree.h"
 #include <stack>
 #include<type_traits>
 
@@ -22,7 +23,9 @@ public:
 	vector<Token> tokenList; //The list of tokens that the parser will analyze, obtained from the lexer
 	int posCounter = 0; //keeps track of the position in the tokenList vector
 	stack<ParserItem> machineStack; // the stack for the parser
+	stack<PSTNode *> nodeStack;
 	int passCounter = 0; //Keeps track of how many times the parser has gone through it's loop.
+	ParseTree PTRee;
 
 	int matrix[15][18]= //The matrix for the parser
 			{// kwprg  b1   b2 sem id kwin kwp p1  p2 com int flo str plu min ast sla  car
@@ -55,6 +58,23 @@ public:
 		machineStack.push(eof);
 		machineStack.push(pgm);
 
+		//Pushing EOF and pgm nodes to stack. 
+		//I'm thinking I don't need the EOF symbol pushed on there
+		A1_Symbol eofSymbol;
+		eofSymbol.index = -1;
+		eofSymbol.name = "EOF";
+		PSTNode * eofNode = new PSTNode(eofSymbol, NULL, -1);
+		nodeStack.push(eofNode);
+		cout << "Pushing eof node..." << endl;
+
+		A1_Symbol pgmSymbol;
+		pgmSymbol.index = 0;
+		pgmSymbol.name = "Pgm";
+		PSTNode * pgmNode = new PSTNode(pgmSymbol, NULL, 0);
+		nodeStack.push(pgmNode);
+		PTRee.root = pgmNode;
+		cout << "Pushing pgm node..." << endl;
+
 		//machineStack.push("$");
 		tokenList = tokens;
 		
@@ -83,28 +103,40 @@ public:
 			if (curPItem.isToken == true)
 			{ //check if the top of the stack is a token. if it is perform the correct action if it matches the next token
 			  //else throw an error				
+			  //Everything in here also affects the stack of nodes - Justin
 				if (curPItem.token == curToken.token)
 				{
+					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
+					nodeStack.pop();
 					machineStack.pop();
 					posCounter++;
+					
 				}
 				else if (curPItem.token == "string"&&curToken.id == 5)//else if string
 				{
+					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
+					nodeStack.pop();
 					machineStack.pop();
 					posCounter++;
 				}
 				else if (curPItem.token == "float"&&curToken.id == 4)//else if float
 				{
+					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
+					nodeStack.pop();
 					machineStack.pop();
 					posCounter++;
 				}
 				else if (curPItem.token == "int"&&curToken.id == 3)//else if int
 				{
+					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
+					nodeStack.pop();
 					machineStack.pop();
 					posCounter++;
 				}
 				else if (curPItem.rule == "id"&&curToken.id == 2)//else if id
 				{
+					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
+					nodeStack.pop();
 					machineStack.pop();
 					posCounter++;
 				}
@@ -123,7 +155,9 @@ public:
 			else
 			{
 				vector<ParserItem> rules = ReturnRules(matrix[curPItem.row - 1][GetCol(tokenList[posCounter]) - 1]);
-				machineStack.pop();				
+				machineStack.pop();
+				PSTNode * temp = nodeStack.top(); //When a rule is predicted, node is popped and children linked
+				nodeStack.pop();
 				if (rules.size()==1&&rules[0].rule =="eps")//epsilon rule
 				{
 					//do nothing;
@@ -132,14 +166,25 @@ public:
 				{
 					for (int i = 0;i < rules.size();i++)//push the rules/tokens to the stack.
 					{
+						cout << "Pushing rules " << i << endl;
 						
+						A1_Symbol tempSymbol;
+						tempSymbol.index = i;
+						tempSymbol.name = rules[rules.size() - 1 - i].rule; //Rule vector was backwards, this is a janky way of fixing it
+						PTRee.insertNodes(temp, tempSymbol);
+						nodeStack.push(temp->pKids[i]);
 						machineStack.push(rules[i]);
+						
+						
 					}
+					
+
 				}
 
 			}
 		}
-
+		PTRee.printTree(PTRee.root);
+		PTRee.deleteTree(PTRee.root);
 	}
 	//Prints the next item in the stack as well as the next item in the token stream.
 	void PrintStatus()

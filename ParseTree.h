@@ -5,15 +5,13 @@
 #include <string>
 
 enum kterm_T { Pgm, kwdprg, brace1, Slist, brace2, Stmt, semi, id, equal, Y1, S_out, E, kwdinput,
-kwdprint, paren1, Elist, paren2, Elist2, comma, T, X1, Opadd, F, X2, Opmul, Fatom, 
-paren1, paren2, id, _int, _float, _string, plus, minus, aster, slash}; //add all the nonterms
+kwdprint, paren1, Elist, paren2, Elist2, comma, T, X1, Opadd, F, X2, Opmul, Fatom, _int, _float, _string, plus, minus, aster, slash}; //add all the nonterms
 
 //Symbols that go into the nodes
 struct A1_Symbol
 {
 	int index;  //I don't know what this is for
 	string name; //Symbol's name
-	kterm_T m_Inonterm;
 };
 
 //Nodes that make up the parse tree
@@ -22,10 +20,11 @@ struct PSTNode
 	A1_Symbol m_sym;  //RHS rule symbol
 	PSTNode * pMom;   //Mom node
 	vector<PSTNode *> pKids;  //Kid nodes
-	int kidsCount;    //How many kids
-	int position;     //Position in RHS rule. Should be identical to index in mom's kid list.
+	int kidsCount = 0;    //How many kids
+	int position = 0;     //Position in RHS rule. Should be identical to index in mom's kid list.
 	PSTNode(A1_Symbol symbol_val, PSTNode * mom_val, int pos_val) : m_sym(symbol_val), pMom(mom_val), 
 		position(pos_val) {};
+	
 };
 
 //Parse tree
@@ -35,25 +34,55 @@ public:
 	PSTNode * root;
 	ParseTree() : root(NULL) {};  //Default constructor, set root to null.
 	bool is_empty() const; //Check for empty tree
-	bool insertNodes(PSTNode *, vector<ParserItem>);
+	void insertNodes(PSTNode *, A1_Symbol); //Making children for the mom node
+	void printTree(PSTNode * root);  //Prints in post order but I don't think it's correct
+	void deleteTree(PSTNode * root); //In theory it deletes the tree
 };
 
-//Check if tree is empty
+//Check if tree is empty idk why I implemented it
 bool ParseTree::is_empty() const
 {
 	return (root == NULL);
 }
 
-bool ParseTree::insertNodes(PSTNode * root, vector<ParserItem> rules)
+/*insertNodes
+@param PSTNode * root - The mom node where new kid nodes will be created
+@param A1_Symbol symbol - The symbol making up the node idk
+*/
+void ParseTree::insertNodes(PSTNode * root, A1_Symbol symbol)
 {
-	for (int i = 0; i < rules.size; i++)
-	{
-		A1_Symbol temp;
-		temp.index = i;
-		temp.name = rules[i].rule;
 		//temp.m_Inonterm = static_cast<kterm_T>(rules[i].rule);
-		PSTNode* tempNode = new PSTNode(temp, root, i);
+		PSTNode* tempNode = new PSTNode(symbol, root, symbol.index);
 		root->pKids.push_back(tempNode);
+		root->kidsCount += 1;
+		cout << "Inserting node..." << endl;
+		cout << "Node: " << tempNode->m_sym.name << endl;
+}
+
+//printTree - Prints the tree in preorder starting with the root node
+//I don't know if it's supposed to print every node or just Nonterminal symbols
+void ParseTree::printTree(PSTNode * root)
+{
+	if (root == NULL) return;
+	else cout << "Rule name: " << root->m_sym.name << " "
+		<< "Rule position: " << root->m_sym.index << endl;
+	for (int i = 0; i < root->kidsCount; i++)
+	{
+		printTree(root->pKids[i]);
 	}
 }
 
+//In theory, deletes every node from tree
+void ParseTree::deleteTree(PSTNode * root)
+{
+	if (root == NULL) return;
+	else
+	{
+		for (int i = 0; i < root->pKids.size(); i++)
+		{
+			deleteTree(root->pKids[i]);
+		}
+		delete root;
+		root = NULL;
+	}
+}
