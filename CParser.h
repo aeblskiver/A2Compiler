@@ -172,12 +172,15 @@ public:
 						tempSymbol.index = i;
 						tempSymbol.name = rules[rules.size() - 1 - i].rule; //Rule vector was backwards, this is a janky way of fixing it
 						PTRee.insertNodes(temp, tempSymbol);
-						nodeStack.push(temp->pKids[i]);
+						
 						machineStack.push(rules[i]);
 						
 						
 					}
-					
+					for (int i = 0; i < temp->pKids.size(); i++)
+					{
+						nodeStack.push(temp->pKids[rules.size() - i - 1]);
+					}
 
 				}
 

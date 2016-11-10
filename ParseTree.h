@@ -66,9 +66,13 @@ void ParseTree::printTree(PSTNode * root)
 	if (root == NULL) return;
 	else cout << "Rule name: " << root->m_sym.name << " "
 		<< "Rule position: " << root->m_sym.index << endl;
-	for (int i = 0; i < root->kidsCount; i++)
+
+	if (root->pKids.size() != 0)
 	{
-		printTree(root->pKids[i]);
+		for (int i = 0; i < root->kidsCount; i++)
+		{
+			printTree(root->pKids[i]);
+		}
 	}
 }
 
