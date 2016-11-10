@@ -36,7 +36,9 @@ public:
 	bool is_empty() const; //Check for empty tree
 	void insertNodes(PSTNode *, A1_Symbol); //Making children for the mom node
 	void printTree(PSTNode * root);  //Prints in post order but I don't think it's correct
+	void printKids(PSTNode * root);
 	void deleteTree(PSTNode * root); //In theory it deletes the tree
+	bool isNonTerminal(PSTNode * root);
 };
 
 //Check if tree is empty idk why I implemented it
@@ -64,15 +66,25 @@ void ParseTree::insertNodes(PSTNode * root, A1_Symbol symbol)
 void ParseTree::printTree(PSTNode * root)
 {
 	if (root == NULL) return;
-	else cout << "Rule name: " << root->m_sym.name << " "
-		<< "Rule position: " << root->m_sym.index << endl;
-
-	if (root->pKids.size() != 0)
+	if (isNonTerminal(root))
 	{
+		cout << "Node: rule #X: " << root->m_sym.name << " = ";
+		printKids(root);
+		cout << endl;
 		for (int i = 0; i < root->kidsCount; i++)
 		{
 			printTree(root->pKids[i]);
 		}
+	}
+	else
+		cout << "Node: " << root->m_sym.name << endl;
+}
+
+void ParseTree::printKids(PSTNode * root)
+{
+	for (int i = 0; i < root->kidsCount; i++)
+	{
+		cout << root->pKids[i]->m_sym.name << " ";
 	}
 }
 
@@ -89,4 +101,9 @@ void ParseTree::deleteTree(PSTNode * root)
 		delete root;
 		root = NULL;
 	}
+}
+
+bool ParseTree::isNonTerminal(PSTNode * root)
+{
+	return (root->pKids.size() > 0);
 }
