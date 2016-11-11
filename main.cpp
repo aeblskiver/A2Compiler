@@ -7,8 +7,12 @@
 	 A lexical analyzer for scanning and tokenizing source files. 
 */
 
+
 //#include "Lexer.h"
 //#include "CParser.h"
+//#include "Lexer.h"
+//#include "CParser.h"
+#include "ParseTree.h"
 #include <cassert>
 //#include <fstream>
 #include <iostream>
