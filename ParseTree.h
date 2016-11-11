@@ -7,11 +7,14 @@
 enum kterm_T { Pgm, kwdprg, brace1, Slist, brace2, Stmt, semi, id, equal, Y1, S_out, E, kwdinput,
 kwdprint, paren1, Elist, paren2, Elist2, comma, T, X1, Opadd, F, X2, Opmul, Fatom, _int, _float, _string, plus, minus, aster, slash}; //add all the nonterms
 
+
+
 //Symbols that go into the nodes
 struct A1_Symbol
 {
 	int index;  //I don't know what this is for
 	string name; //Symbol's name
+	int ruleID;
 };
 
 //Nodes that make up the parse tree
@@ -68,7 +71,7 @@ void ParseTree::printTree(PSTNode * root)
 	if (root == NULL) return;
 	if (isNonTerminal(root))
 	{
-		cout << "Node: rule #X: " << root->m_sym.name << " = ";
+		cout << "Node: rule #" << root->m_sym.ruleID << ": " << root->m_sym.name << " = ";
 		printKids(root);
 		cout << endl;
 		for (int i = 0; i < root->kidsCount; i++)
@@ -107,3 +110,4 @@ bool ParseTree::isNonTerminal(PSTNode * root)
 {
 	return (root->pKids.size() > 0);
 }
+
