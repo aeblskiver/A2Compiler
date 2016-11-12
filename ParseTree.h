@@ -21,6 +21,7 @@ struct A1_Symbol
 struct PSTNode
 {
 	A1_Symbol m_sym;  //RHS rule symbol
+	int ruleNumber = -1;
 	PSTNode * pMom;   //Mom node
 	vector<PSTNode *> pKids;  //Kid nodes
 	int kidsCount = 0;    //How many kids
@@ -42,6 +43,8 @@ public:
 	void printKids(PSTNode * root);
 	void deleteTree(PSTNode * root); //In theory it deletes the tree
 	bool isNonTerminal(PSTNode * root);
+	void P2AST(PSTNode * root);  //Convert tree to AST
+	void P2A_Helper(PSTNode * root);
 };
 
 //Check if tree is empty idk why I implemented it
@@ -71,7 +74,7 @@ void ParseTree::printTree(PSTNode * root)
 	if (root == NULL) return;
 	if (isNonTerminal(root))
 	{
-		cout << "Node: rule #" << root->m_sym.ruleID << ": " << root->m_sym.name << " = ";
+		cout << "Node: rule #" << root->ruleNumber << ": " << root->m_sym.name << " = ";
 		printKids(root);
 		cout << endl;
 		for (int i = 0; i < root->kidsCount; i++)
@@ -111,3 +114,62 @@ bool ParseTree::isNonTerminal(PSTNode * root)
 	return (root->pKids.size() > 0);
 }
 
+void ParseTree::P2AST(PSTNode * root)
+{
+	PSTNode * $$ = root;
+	PSTNode * $1;
+	int ruleID = root->m_sym.ruleID;
+	switch (ruleID)
+	{
+	case 1:
+		$$->pKids.erase($$->pKids.begin() + 1); //Removes brace1
+		$$->pKids.erase($$->pKids.begin() + 2); //Removes brace2
+		$1 = root->pKids[0];                    
+		$1->pKids.push_back($$->pKids[1]);  //Link kwdpg to Slist
+		this->root = $1; //Make kwdprg the root
+	case 2:
+
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+	case 9:
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+	case 14:
+	case 15:
+	case 16:
+	case 17:
+	case 18:
+	case 19:
+
+	case 20:
+		$$ = $$->pMom->pMom;
+	case 21:
+		$$ = $$->pMom->pMom;
+	case 22:
+		$$ = $$->pMom->pMom;
+	case 23:
+		$$ = $$->pMom->pMom;
+	case 24:
+		$$ = $$->pMom->pMom;
+	case 25:
+		$$ = $$->pMom->pMom;
+	case 26:
+		$$ = $$->pMom->pMom;
+	case 27:
+		$$ = $$->pMom->pMom;
+	case 28:
+		$$ = $$->pMom->pMom;
+	default:break	;
+	}
+}
+
+void ParseTree::P2A_Helper(PSTNode * root)
+{
+	//if (isNonTerminal(root->pKids))
+}

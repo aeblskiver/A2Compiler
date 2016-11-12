@@ -81,6 +81,7 @@ public:
 		pgmSymbol.name = "Pgm";
 		pgmSymbol.ruleID = 1;
 		PSTNode * pgmNode = new PSTNode(pgmSymbol, NULL, 0);
+		pgmNode->ruleNumber = 1;
 		nodeStack.push(pgmNode);
 		PTRee.root = pgmNode;
 		cout << "Pushing pgm node..." << endl;
@@ -184,7 +185,7 @@ public:
 					for (int i = 0;i < rules.size();i++)//push the rules/tokens to the stack.
 					{
 						cout << "Pushing rules " << i << endl;
-						
+						temp->ruleNumber = rules[i].ruleID;
 						A1_Symbol tempSymbol;
 						tempSymbol.index = i;
 						tempSymbol.name = rules[rules.size() - 1 - i].rule; //Rule vector was backwards, this is a janky way of fixing it
@@ -319,7 +320,7 @@ public:
 			ParserItem r4; r4.isToken = true; r4.rule = "brace2"; r4.token = "}"; r4.ruleID = 1;
 			ParserItem r3; r3.isToken = false; r3.rule = "slist"; r3.row = 2; r3.ruleID = 1;
 			ParserItem r2; r2.isToken = true; r2.rule = "brace1"; r2.token = "{"; r2.ruleID = 1;
-			ParserItem r1; r1.isToken = true; r1.rule = "kwdprg"; r1.token = "prog"; r2.ruleID = 1;
+			ParserItem r1; r1.isToken = true; r1.rule = "kwdprg"; r1.token = "prog"; r1.ruleID = 1;
 			returnRules.push_back(r4);returnRules.push_back(r3);returnRules.push_back(r2);returnRules.push_back(r1);
 		}
 		break;
