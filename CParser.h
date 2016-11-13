@@ -70,9 +70,9 @@ public:
 		//Pushing EOF and pgm nodes to stack. 
 		//I'm thinking I don't need the EOF symbol pushed on there
 		A1_Symbol eofSymbol;
-		eofSymbol.index = -1;
+		eofSymbol.index = 1;
 		eofSymbol.name = "EOF";
-		PSTNode * eofNode = new PSTNode(eofSymbol, NULL, -1);
+		PSTNode * eofNode = new PSTNode(eofSymbol, NULL, 1);
 		nodeStack.push(eofNode);
 		cout << "Pushing eof node..." << endl;
 
@@ -189,7 +189,7 @@ public:
 						A1_Symbol tempSymbol;
 						tempSymbol.index = i;
 						tempSymbol.name = rules[rules.size() - 1 - i].rule; //Rule vector was backwards, this is a janky way of fixing it
-						tempSymbol.ruleID = rules[i].ruleID;
+						//tempSymbol.ruleID = rules[i].ruleID;
 						PTRee.insertNodes(temp, tempSymbol);
 						
 						machineStack.push(rules[i]);
@@ -206,7 +206,9 @@ public:
 			}
 		}
 		PTRee.printTree(PTRee.root);
-		PTRee.deleteTree(PTRee.root);
+		PTRee.P2AST(PTRee.root);
+		PTRee.printTree(PTRee.root);
+		//PTRee.deleteTree(PTRee.root);
 	}
 	//Prints the next item in the stack as well as the next item in the token stream.
 	void PrintStatus()

@@ -44,7 +44,7 @@ public:
 	void deleteTree(PSTNode * root); //In theory it deletes the tree
 	bool isNonTerminal(PSTNode * root);
 	void P2AST(PSTNode * root);  //Convert tree to AST
-	void P2A_Helper(PSTNode * root);
+	void P2AST_Convert(PSTNode * root);
 };
 
 //Check if tree is empty idk why I implemented it
@@ -83,7 +83,7 @@ void ParseTree::printTree(PSTNode * root)
 		}
 	}
 	else
-		cout << "Node: " << root->m_sym.name << endl;
+		cout << "Node: " << root->m_sym.name << "   Rule number:" << root->m_sym.ruleID << endl;
 }
 
 void ParseTree::printKids(PSTNode * root)
@@ -116,60 +116,294 @@ bool ParseTree::isNonTerminal(PSTNode * root)
 
 void ParseTree::P2AST(PSTNode * root)
 {
+	cout << "Converting node: " << root->m_sym.name << " Position: " << root->position << " Rule number: "
+		<< root->ruleNumber << endl;
+	if (root == NULL) return;
+	else
+	{
+		for (int i = 0; i < root->pKids.size(); i++)
+		{
+			P2AST(root->pKids[i]);
+		}
+		if (isNonTerminal(root))
+			P2AST_Convert(root);
+	}
+	cout << "Finished converting node " << root->m_sym.name << root->ruleNumber << endl;
+}
+
+void ParseTree::P2AST_Convert(PSTNode * root)
+{
+	PSTNode * gma = root->pMom;
 	PSTNode * $$ = root;
 	PSTNode * $1;
-	int ruleID = root->m_sym.ruleID;
+	PSTNode * $2;
+	PSTNode * $3;
+	PSTNode * $4;
+	int ruleID = root->ruleNumber;
+	cout << "I got here before FUBAR: " << ruleID << endl;
 	switch (ruleID)
 	{
 	case 1:
-		$$->pKids.erase($$->pKids.begin() + 1); //Removes brace1
-		$$->pKids.erase($$->pKids.begin() + 2); //Removes brace2
-		$1 = root->pKids[0];                    
-		$1->pKids.push_back($$->pKids[1]);  //Link kwdpg to Slist
-		this->root = $1; //Make kwdprg the root
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0];
+		$2 = $$->pKids[1];
+		$1->pKids.push_back($2);  //Link kwdpg to Slist
+		delete $$;
+		$$ = $1; //Make kwdprg the root
+		break;
 	case 2:
-
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = root->pKids[0];
+		$2 = root->pKids[1];
+		gma->pKids.clear(); gma->pKids.push_back($1); gma->pKids.push_back($2); //Connect kwdprg to Stmt and Slist
+		$$->pKids.clear(); delete $$;
+		break;
 	case 3:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		break;
 	case 4:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = root->pKids[0];
+		$2 = root->pKids[1];
+		$3 = root->pKids[2];
+		$2->pKids.push_back($1); $2->pKids.push_back($3);
+		gma->pKids[$$->position] = $2;
+		$$->pKids.clear(); delete $$;
+		break;
 	case 5:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 6:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 7:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 8:
-	case 9:
-	case 10:
-	case 11:
-	case 12:
-	case 13:
-	case 14:
-	case 15:
-	case 16:
-	case 17:
-	case 18:
-	case 19:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0]; //kwdprint
+		$2 = $$->pKids[2];
+		$3 = $$->pKids[4];
+		$$->pKids.clear();
+		if ($3->ruleNumber == -1)
+		{
+			$1->pKids.push_back($2);
+			gma->pKids[$$->position] = $1;
+		}
+		else
+		{
+			$1->pKids.push_back($2);
+			$1->pKids.push_back($3);
+			gma->pKids[$$->position] = $1;
+		}
 
+		$$->pKids.clear();  delete $$;
+		break;
+	case 9:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0];
+		$2 = $$->pKids[1];
+		gma->pKids[$$->position] = $1;
+		gma->pKids.push_back($2);
+		$$->pKids.clear(); delete $$;
+		break;
+	case 10:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		break;
+	case 11:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$2 = $$->pKids[1];
+		gma->pKids[1] = $2;
+		$$->pKids.clear(); delete $$;
+		break;
+	case 12:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0];
+		if ($$->pKids.size() > 1)
+		{
+			$2 = $$->pKids[1];
+			if ($2->ruleNumber == -1)
+			{
+				gma->pKids[$$->position] = $1;
+				
+			}
+			else
+			{
+				$2->pKids.insert($2->pKids.begin(), $1);
+				gma->pKids[$$->position] = $2;
+				
+
+			}
+			$$->pKids.clear(); delete $$;
+		}
+		else
+		{
+			gma->pKids[$$->position] = $1;
+			$$->pKids.clear(); delete $$;
+		}
+		break;
+	case 13:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		break;
+	case 14:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0];
+		$2 = $$->pKids[1];
+		$3 = $$->pKids[2];
+		if ($3->m_sym.name == "eps")
+		{
+			$1->pKids.push_back($2);
+			gma->pKids[$$->position] = $1;
+			$$->pKids.clear(); delete $$;
+		}
+		else
+		{
+			gma->pKids[$$->position] = $1;
+			$1->pKids.push_back($2); $1->pKids.push_back($3);
+			$$->pKids.clear(); delete $$;
+		}
+		break;
+	case 15:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0];
+		if ($$->pKids.size() > 1)
+		{
+			$2 = $$->pKids[1];
+			if ($2->ruleNumber == -1)
+			{
+				gma->pKids[$$->position] = $1;
+				$$->pKids.clear(); delete $$;
+			}
+			else
+			{
+				$2->pKids.insert($2->pKids.begin(), $1);
+				gma->pKids[$$->position] = $2;
+				$$->pKids.clear(); delete $$;
+			}
+		}
+		else
+		{
+			gma->pKids[$$->position] = $1;
+			$$->pKids.clear(); delete $$;
+		}
+		cout << "Did you reach me?" << endl;
+		
+		break;
+	case 16:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		break;
+	case 17:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		$1 = $$->pKids[0];
+		$2 = $$->pKids[1];
+		if ($$->pKids.size() > 2)
+		{
+			$3 = $$->pKids[2];
+			if ($3->m_sym.name == "eps")
+			{
+				$1->pKids.push_back($2);
+				gma->pKids[$$->position] = $1;
+				$$->pKids.clear(); delete $$;
+			}
+
+			else
+			{
+				gma->pKids[$$->position] = $1;
+				$1->pKids.push_back($2); $1->pKids.push_back($3);
+				$$->pKids.clear(); delete $$;
+			}
+		}
+		else
+		{
+			$1->pKids.push_back($2);
+			gma->pKids[$$->position] = $1;
+			$$->pKids.clear(); delete $$;
+		}
+		break;
+	case 18:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		cout << "I am converting teh fatom" << endl;
+		break;
+	case 19:
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[1];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 20:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 21:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 22:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		cout << "I converted teh float" << endl;
+		break;
 	case 23:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 24:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 25:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 26:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 27:
-		$$ = $$->pMom->pMom;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
 	case 28:
-		$$ = $$->pMom->pMom;
-	default:break	;
+		cout << "I got here before FUBAR: " << ruleID << endl;
+		gma->pKids[$$->position] = $$->pKids[0];
+		$$->pKids.clear(); delete $$;
+		break;
+	default:
+		break;
 	}
 }
 
+/*
 void ParseTree::P2A_Helper(PSTNode * root)
 {
-	//if (isNonTerminal(root->pKids))
+
+    So if this node's kid has kids in the second slot?
+	we gonna do this thang:
+
+	if (isNonTerminal(root->pKids[somenumber]))
+	{
+	// $2.Lkid = $1
+	//
+	root->pKids[1] = root->pKids[0];
+	PSTNode * gma = root->pMom->pMom;
+	int gmaSlot = root->gmaSlot;
+
+	//$$ = $2
+	gma->pKids[gmaSlot] = root->pKids[1]
 }
+*/
