@@ -1,6 +1,7 @@
 #pragma once
 #include "CParser.h"
 #include "Lexer.h"
+#include "SymbolTable.h"
 
 //Compiler class is where all the different components are called from, handles the menu, stores data used between multiple components, and does error handling.
 class Compiler
@@ -8,6 +9,7 @@ class Compiler
 	string fileName="No File Loaded"; //the filename the compiler is currently working with
 	Lexer lexer; //the lexer
 	Parser parser; //the parser
+	SymbolTable symbolTable;//the symbol table
 	string output; //recieves strings from the other components for output
 	vector<Token> tokens; //the token list of the file most recently run through the parser. 
 	
@@ -75,6 +77,9 @@ public: void menu()
 			tokens=lexer.scanFile(fileName);
 
 		tokens = lexer.tokens;
+		symbolTable.BuildSymbolTable(lexer.tokens);
+		symbolTable.PrintTable();
+		system("PAUSE");
 	}
 
 	//run the currently loaded file through the parser
