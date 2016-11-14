@@ -82,6 +82,8 @@ public:
 		pgmSymbol.ruleID = 1;
 		PSTNode * pgmNode = new PSTNode(pgmSymbol, NULL, 0);
 		pgmNode->ruleNumber = 1;
+		pgmNode->creationIndex = PTRee.indexCount;
+		PTRee.indexCount++;
 		nodeStack.push(pgmNode);
 		PTRee.root = pgmNode;
 		cout << "Pushing pgm node..." << endl;
@@ -132,6 +134,8 @@ public:
 				}
 				else if (curPItem.token == "string"&&curToken.id == 5)//else if string
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -139,6 +143,8 @@ public:
 				}
 				else if (curPItem.token == "float"&&curToken.id == 4)//else if float
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -146,6 +152,8 @@ public:
 				}
 				else if (curPItem.token == "int"&&curToken.id == 3)//else if int
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -153,6 +161,8 @@ public:
 				}
 				else if (curPItem.rule == "id"&&curToken.id == 2)//else if id
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -205,10 +215,12 @@ public:
 
 			}
 		}
+		cout << "Printing Parse Tree: " << endl;
 		PTRee.printTree(PTRee.root);
 		PTRee.P2AST(PTRee.root);
-		PTRee.printTree(PTRee.root);
-		//PTRee.deleteTree(PTRee.root);
+		cout << "\nPrinting AST: " << endl;
+		PTRee.printAST(PTRee.root);
+		PTRee.deleteTree(PTRee.root);
 	}
 	//Prints the next item in the stack as well as the next item in the token stream.
 	void PrintStatus()
