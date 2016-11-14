@@ -74,23 +74,23 @@ void ParseTree::printTree(PSTNode * root)
 	if (root == NULL) return;
 	if (isNonTerminal(root))
 	{
-		cout << "Node: rule #" << root->ruleNumber << ": " << root->m_sym.name << " = ";
+		cout << "Node: " << root->m_sym.name << " = " << endl;
 		printKids(root);
 		cout << endl;
-		for (int i = 0; i < root->kidsCount; i++)
+		for (int i = 0; i < root->pKids.size(); i++)
 		{
 			printTree(root->pKids[i]);
 		}
 	}
 	else
-		cout << "Node: " << root->m_sym.name << "   Rule number:" << root->m_sym.ruleID << endl;
+		cout << "Node: " << root->m_sym.name << "  " << endl;
 }
 
 void ParseTree::printKids(PSTNode * root)
 {
-	for (int i = 0; i < root->kidsCount; i++)
+	for (int i = 0; i < root->pKids.size(); i++)
 	{
-		cout << root->pKids[i]->m_sym.name << " ";
+		cout << root->pKids[i]->m_sym.name << " " << endl;
 	}
 }
 
@@ -128,7 +128,6 @@ void ParseTree::P2AST(PSTNode * root)
 		if (isNonTerminal(root))
 			P2AST_Convert(root);
 	}
-	cout << "Finished converting node " << root->m_sym.name << root->ruleNumber << endl;
 }
 
 void ParseTree::P2AST_Convert(PSTNode * root)
@@ -146,16 +145,36 @@ void ParseTree::P2AST_Convert(PSTNode * root)
 	case 1:
 		cout << "I got here before FUBAR: " << ruleID << endl;
 		$1 = $$->pKids[0];
-		$2 = $$->pKids[1];
-		$1->pKids.push_back($2);  //Link kwdpg to Slist
+		for (int i = 1; i < $$->pKids.size(); i++)
+		{
+			if (isNonTerminal($$->pKids[i]))
+			{
+				$1->pKids.push_back($$->pKids[i]);
+			}
+		}//Link kwdpg to Slist
 		delete $$;
-		$$ = $1; //Make kwdprg the root
+		this->root = $1; //Make kwdprg the root
 		break;
 	case 2:
 		cout << "I got here before FUBAR: " << ruleID << endl;
-		$1 = root->pKids[0];
-		$2 = root->pKids[1];
-		gma->pKids.clear(); gma->pKids.push_back($1); gma->pKids.push_back($2); //Connect kwdprg to Stmt and Slist
+		if ($$->pKids.size() >= 4)
+		{
+			$1 = $$->pKids[0];
+			$2 = $$->pKids[2];
+			$3 = $$->pKids[3];
+			gma->pKids[$$->position] = $1; 
+			for (int i = 1; i < $$->pKids.size(); i++)
+			{
+				if (isNonTerminal($$->pKids[i]))
+					gma->pKids.push_back($$->pKids[i]);
+			}
+		}
+		else
+		{
+			$1 = root->pKids[0];
+			$2 = root->pKids[2];
+			gma->pKids[$$->position] = $1; gma->pKids.push_back($2); //Connect kwdprg to Stmt and Slist
+		}
 		$$->pKids.clear(); delete $$;
 		break;
 	case 3:
