@@ -113,6 +113,7 @@
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="CParser.h" />
     <ClInclude Include="Compiler.h" />
+    <ClInclude Include="SymbolTable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

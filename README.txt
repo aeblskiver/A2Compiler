@@ -32,6 +32,7 @@ Files Included:
 	README.txt
 	A1-GrammarNumbered.txt
 	ParseMatrix.pdf
+	Symboltable.h
 
 portions primarily authored by Chris:
 Token and Keyword Structs

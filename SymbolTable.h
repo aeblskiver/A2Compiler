@@ -22,6 +22,7 @@ struct SymbolTableItem
 	vector<Token> appearences;
 };
 
+//symbol table class that builds and manages the symbol table. 
 class SymbolTable
 {
 	vector<SymbolTableItem> symbolTable;
@@ -43,6 +44,8 @@ public:void BuildSymbolTable(vector<Token>tokens)
 
 	}
 
+	   //Add an item to the table. First it checks to see if ID is already present, if not then it creates an entry. 
+
 	void AddToTable(Token idToken)
 	{
 		//first check to makes sure that particular ID doesn't already exist on the table. if it does, add this token to that vector
@@ -62,6 +65,8 @@ public:void BuildSymbolTable(vector<Token>tokens)
 		symbolTable.push_back(sym);
 	}
 
+
+	//Go through the symbole table and print all ID's
 	void PrintTable()
 	{
 		for (int i = 0;i < symbolTable.size();i++)
