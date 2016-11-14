@@ -1,29 +1,36 @@
+/*
+	Project #3: PST + AST + Symtab
+	CPSC 323
+	November 13, 2016
+	Team CCJ- Chris Leonardi and Justin Shelley
+
+	
+	A class for generating parse trees and converting them to an abstract syntax tree.
+	Author: Justin Shelley
+*/
+
 #pragma once
 
 #include "Lexer.h"
 #include <stack>
 #include <string>
 
-enum kterm_T { Pgm, kwdprg, brace1, Slist, brace2, Stmt, semi, id, equal, Y1, S_out, E, kwdinput,
-kwdprint, paren1, Elist, paren2, Elist2, comma, T, X1, Opadd, F, X2, Opmul, Fatom, _int, _float, _string, plus, minus, aster, slash}; //add all the nonterms
-
-
 
 //Symbols that go into the nodes
 struct A1_Symbol
 {
-	int index;  //I don't know what this is for
+	int index;  //Index in rule 
 	string name; //Symbol's name
-	int ruleID;
+	int ruleID; //Rule ID the toke is part of
 };
 
 //Nodes that make up the parse tree
 struct PSTNode
 {
-	Token nodeToken;
-	int creationIndex;
+	Token nodeToken; //Token in the node
+	int creationIndex; //Order node was created
 	A1_Symbol m_sym;  //RHS rule symbol
-	int ruleNumber = 0;
+	int ruleNumber = 0; //Node's ruler number
 	PSTNode * pMom;   //Mom node
 	vector<PSTNode *> pKids;  //Kid nodes
 	int kidsCount = 0;    //How many kids
@@ -33,23 +40,28 @@ struct PSTNode
 	
 };
 
-//Parse tree
+/*
+	Class ParseTree
+	Responsible for generating parse tree, converting to AST, and deleting the tree.
+
+	@author Justin Shelley
+*/
 class ParseTree
 {
 public: 
-	int indexCount = 0;
-	PSTNode * root;
+	int indexCount = 0; //Node index
+	PSTNode * root; //Pointer to root of three
 	ParseTree() : root(NULL) {};  //Default constructor, set root to null.
 	bool is_empty() const; //Check for empty tree
 	void insertNodes(PSTNode *, A1_Symbol); //Making children for the mom node
-	void printAST(PSTNode * root);
-	void printTree(PSTNode * root);  //Prints in post order but I don't think it's correct
-	void printKids(PSTNode * root);
-	void deleteTree(PSTNode * root); //In theory it deletes the tree
-	bool isNonTerminal(PSTNode * root);
+	void printAST(PSTNode * root); //Prints AST
+	void printTree(PSTNode * root);  //Print parse tree
+	void printKids(PSTNode * root);  //Prints a node's kids
+	void deleteTree(PSTNode * root); //Deletes the tree
+	bool isNonTerminal(PSTNode * root); //Checks if a node has kids (nonterminal)
 	void P2AST(PSTNode * root);  //Convert tree to AST
-	void P2AST_Convert(PSTNode * root);
-	bool isTerminal(PSTNode * root);
+	void P2AST_Convert(PSTNode * root); //Helper function for P2AST
+	bool isTerminal(PSTNode * root); //Checks if a node is a token identifier
 };
 
 //Check if tree is empty idk why I implemented it
@@ -60,7 +72,9 @@ bool ParseTree::is_empty() const
 
 /*insertNodes
 @param PSTNode * root - The mom node where new kid nodes will be created
-@param A1_Symbol symbol - The symbol making up the node idk
+@param A1_Symbol symbol - The symbol making up the node
+
+@author Justin Shelley
 */
 void ParseTree::insertNodes(PSTNode * root, A1_Symbol symbol)
 {
@@ -74,8 +88,11 @@ void ParseTree::insertNodes(PSTNode * root, A1_Symbol symbol)
 		cout << "Node: " << tempNode->m_sym.name << endl;
 }
 
-//printTree - Prints the tree in preorder starting with the root node
-//I don't know if it's supposed to print every node or just Nonterminal symbols
+/*
+	printAST - Prints the abstract syntax tree in preorder starting with the root node
+	@param root - Root of the tree
+	@author Justin Shelley
+*/
 void ParseTree::printAST(PSTNode * root)
 {
 	if (root == NULL) return;
@@ -102,6 +119,11 @@ void ParseTree::printAST(PSTNode * root)
 	}
 }
 
+/*
+	printTree - Prints the parse tree in pre-order
+	@param root - Root of the tree
+	@author Justin Shelley
+*/
 void ParseTree::printTree(PSTNode * root)
 {
 	if (root == NULL) return;
@@ -116,6 +138,11 @@ void ParseTree::printTree(PSTNode * root)
 	}
 }
 
+/*
+	printKids - helper function for printTree
+	@param root - Root of tree
+	@author Justin Shelley
+*/
 void ParseTree::printKids(PSTNode * root)
 {
 	for (int i = 0; i < root->pKids.size(); i++)
@@ -125,7 +152,11 @@ void ParseTree::printKids(PSTNode * root)
 	cout << ")" << endl;
 }
 
-//In theory, deletes every node from tree
+/*
+	deleteTree - Free up memory and set pointers to NULL
+	@param root - Root of tree
+	@author Justin Shelley
+*/
 void ParseTree::deleteTree(PSTNode * root)
 {
 	if (root == NULL) return;
@@ -140,11 +171,22 @@ void ParseTree::deleteTree(PSTNode * root)
 	}
 }
 
+/*
+	isNonTerminal - Checks the node to see if it has kids (aka nonterminal)
+	@return bool - Yes if node is nonterminal, no otherwise
+	@param root - Node to check
+	@author Justin Shelley
+*/
 bool ParseTree::isNonTerminal(PSTNode * root)
 {
 	return (root->pKids.size() > 0);
 }
 
+/*
+	P2AST - Parse 2 Abstract Syntax Tree. Goes through each node to apply conversion function
+	@param root - Root of tree
+	@author Justin Shelley
+*/
 void ParseTree::P2AST(PSTNode * root)
 {
 	if (root == NULL) return;
@@ -159,6 +201,11 @@ void ParseTree::P2AST(PSTNode * root)
 	}
 }
 
+/*
+	P2AST_Convert - Helper function for P2AST. Rule id designated which block modification to apply
+	@param root - Node to be converted
+	@author Justin Shelley
+*/
 void ParseTree::P2AST_Convert(PSTNode * root)
 {
 	PSTNode * gma = root->pMom;
@@ -426,6 +473,11 @@ void ParseTree::P2AST_Convert(PSTNode * root)
 	}
 }
 
+/*
+	isTerminal - Checks if node is a token identifier
+	@param root - Node to check
+	@author Justin Shelley
+*/
 bool ParseTree::isTerminal(PSTNode * root)
 {
 	if (root->m_sym.name == "id" || root->m_sym.name == "int" || root->m_sym.name == "float" || root->m_sym.name == "string")

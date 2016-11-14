@@ -1,3 +1,14 @@
+/*
+Project #3: PST + AST + Symtab
+CPSC 323
+November 13, 2016
+Team CCJ- Chris Leonardi and Justin Shelley
+
+
+A class for creating the symbol table
+Author: Chris Leonardi
+*/
+
 #pragma once
 #include <iostream>
 #include <vector>

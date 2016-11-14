@@ -1,7 +1,7 @@
 /*
     Project #1: Lexer
-	 CPSC 323
-	 September 23, 2016
+	CPSC 323
+	September 23, 2016
     Team CCJ- Chris Leonardi and Justin Shelley
 
 	 A lexical analyzer for scanning and tokenizing source files. 
