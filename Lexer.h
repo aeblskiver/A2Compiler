@@ -25,7 +25,7 @@ struct Token
 	string token;
 	int id;
 	int lineNumber;
-	
+	int column;
 };
 
 
@@ -52,6 +52,7 @@ public:
 	vector<Token> tokens;
 	vector<Keyword> keyList;
 	int lineNumber = 1;
+	int columnNumber = 0;
 	int tokenCount = 0;
 	int errorcode = 0; //errorcode to be grabbed when exiting on an error
 	string errorFile; //the file related to the error.
@@ -104,12 +105,13 @@ public:
 
 		 @author Chris Leonardi
 	*/
-	void AddToken(string token, int id)
+	void AddToken(string token, int id, int column)
 	{
 		tokens.emplace_back(Token());
 		tokens[tokenCount].id = id;
 		tokens[tokenCount].token = token;
 		tokens[tokenCount].lineNumber = lineNumber;
+		tokens[tokenCount].column = column;
 		tokenCount++;
 	}
 
@@ -146,11 +148,12 @@ public:
 		{			
 			next_token(textLine);
 			lineNumber++;
+			columnNumber = 0;
 		}
 		if (srcFile.eof())
 		{
 			--lineNumber;
-			AddToken("", 0);
+			AddToken("", 0,0);
 		}
 		
 		PrintTokens();
@@ -206,11 +209,11 @@ public:
 
 			if (isAccepting(state))
 			{
-				
+				columnNumber++;
 				lexeme = textLine.substr(start, current - start);
 				//cout << "Lexeme: " << lexeme << endl;
-				if (state < 7 && state > 0) AddToken(lexeme, getID(state));	//If it's an identifier, int or float
-				else AddToken(lexeme, getOpID(lexeme));					//For delimiters, operators, and other punctuation
+				if (state < 7 && state > 0) AddToken(lexeme, getID(state),columnNumber);	//If it's an identifier, int or float
+				else AddToken(lexeme, getOpID(lexeme),columnNumber);					//For delimiters, operators, and other punctuation
 				start = current;
 				current--;
 				(state == -1 ? state = -1 : state = 0); //Check for end of line and reset start
@@ -242,8 +245,9 @@ public:
 			else
 				break;
 			cur++;
-		}		
-		AddToken(token, 5);
+		}
+		columnNumber++;
+		AddToken(token, 5,columnNumber);
 		return cur + 1;
 	}
 
@@ -274,13 +278,13 @@ public:
 		{
 			if (token == keyList[i].key)
 			{
-
-				AddToken(keyList[i].key, keyList[i].id);
+				columnNumber++;
+				AddToken(keyList[i].key, keyList[i].id,columnNumber);
 				return cur;
 			}
 		}
-
-		AddToken(token, 2);
+		columnNumber++;
+		AddToken(token, 2,columnNumber);
 		return cur;
 
 	}

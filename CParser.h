@@ -12,6 +12,7 @@ struct ParserItem: Token
 	bool isToken; //a boolean to check if the item at top of stack is a rule or a token
 	string rule; //string value that holds the text of the rule or token
 	int row = 0; //if the item is a rule, holds the row that that rule is associated with in the matrix.
+	int ruleID = 0;
 };
 
  
@@ -69,16 +70,20 @@ public:
 		//Pushing EOF and pgm nodes to stack. 
 		//I'm thinking I don't need the EOF symbol pushed on there
 		A1_Symbol eofSymbol;
-		eofSymbol.index = -1;
+		eofSymbol.index = 1;
 		eofSymbol.name = "EOF";
-		PSTNode * eofNode = new PSTNode(eofSymbol, NULL, -1);
+		PSTNode * eofNode = new PSTNode(eofSymbol, NULL, 1);
 		nodeStack.push(eofNode);
 		cout << "Pushing eof node..." << endl;
 
 		A1_Symbol pgmSymbol;
 		pgmSymbol.index = 0;
 		pgmSymbol.name = "Pgm";
+		pgmSymbol.ruleID = 1;
 		PSTNode * pgmNode = new PSTNode(pgmSymbol, NULL, 0);
+		pgmNode->ruleNumber = 1;
+		pgmNode->creationIndex = PTRee.indexCount;
+		PTRee.indexCount++;
 		nodeStack.push(pgmNode);
 		PTRee.root = pgmNode;
 		cout << "Pushing pgm node..." << endl;
@@ -129,6 +134,8 @@ public:
 				}
 				else if (curPItem.token == "string"&&curToken.id == 5)//else if string
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -136,6 +143,8 @@ public:
 				}
 				else if (curPItem.token == "float"&&curToken.id == 4)//else if float
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -143,6 +152,8 @@ public:
 				}
 				else if (curPItem.token == "int"&&curToken.id == 3)//else if int
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -150,6 +161,8 @@ public:
 				}
 				else if (curPItem.rule == "id"&&curToken.id == 2)//else if id
 				{
+					PSTNode * temp = nodeStack.top();
+					temp->nodeToken.token = curToken.token;
 					cout << "Popping stack...   " << nodeStack.top()->m_sym.name << endl;
 					nodeStack.pop();
 					machineStack.pop();
@@ -182,10 +195,11 @@ public:
 					for (int i = 0;i < rules.size();i++)//push the rules/tokens to the stack.
 					{
 						cout << "Pushing rules " << i << endl;
-						
+						temp->ruleNumber = rules[i].ruleID;
 						A1_Symbol tempSymbol;
 						tempSymbol.index = i;
 						tempSymbol.name = rules[rules.size() - 1 - i].rule; //Rule vector was backwards, this is a janky way of fixing it
+						//tempSymbol.ruleID = rules[i].ruleID;
 						PTRee.insertNodes(temp, tempSymbol);
 						
 						machineStack.push(rules[i]);
@@ -201,7 +215,11 @@ public:
 
 			}
 		}
+		cout << "Printing Parse Tree: " << endl;
 		PTRee.printTree(PTRee.root);
+		PTRee.P2AST(PTRee.root);
+		cout << "\nPrinting AST: " << endl;
+		PTRee.printAST(PTRee.root);
 		PTRee.deleteTree(PTRee.root);
 	}
 	//Prints the next item in the stack as well as the next item in the token stream.
@@ -313,60 +331,60 @@ public:
 		{
 		case 1: 
 		{
-			ParserItem r4; r4.isToken = true;r4.rule = "brace2";r4.token = "}";
-			ParserItem r3; r3.isToken = false;r3.rule = "slist";r3.row = 2;
-			ParserItem r2; r2.isToken = true;r2.rule = "brace1";r2.token = "{";
-			ParserItem r1; r1.isToken = true;r1.rule = "kwdprg";r1.token = "prog";
+			ParserItem r4; r4.isToken = true; r4.rule = "brace2"; r4.token = "}"; r4.ruleID = 1;
+			ParserItem r3; r3.isToken = false; r3.rule = "slist"; r3.row = 2; r3.ruleID = 1;
+			ParserItem r2; r2.isToken = true; r2.rule = "brace1"; r2.token = "{"; r2.ruleID = 1;
+			ParserItem r1; r1.isToken = true; r1.rule = "kwdprg"; r1.token = "prog"; r1.ruleID = 1;
 			returnRules.push_back(r4);returnRules.push_back(r3);returnRules.push_back(r2);returnRules.push_back(r1);
 		}
 		break;
 		case 2:
 		{
-			ParserItem r3; r3.isToken = false;r3.rule = "slist";r3.row = 2;
-			ParserItem r2; r2.isToken = true;r2.rule = "semi";r2.token = ";";
-			ParserItem r1; r1.isToken = false;r1.rule = "stmt";r1.row = 3;
+			ParserItem r3; r3.isToken = false; r3.rule = "slist"; r3.row = 2; r3.ruleID = 2;
+			ParserItem r2; r2.isToken = true;r2.rule = "semi";r2.token = ";"; r2.ruleID = 2;
+			ParserItem r1; r1.isToken = false;r1.rule = "stmt";r1.row = 3; r1.ruleID = 2;
 			returnRules.push_back(r3);returnRules.push_back(r2);returnRules.push_back(r1);
 		}
 		break;
 		case 3:
 		{
-			ParserItem r1; r1.isToken = false;r1.rule = "eps";
+			ParserItem r1; r1.isToken = false; r1.rule = "eps"; r1.ruleID = 3;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 4:
 		{
 			
-			ParserItem r3; r3.isToken = true;r3.rule = "id";
-			ParserItem r2; r2.isToken = true;r2.rule = "equal";r2.token = "=";
-			ParserItem r1; r1.isToken = false;r1.rule = "y1";r1.row = 4;
+			ParserItem r3; r3.isToken = true; r3.rule = "id"; r3.ruleID = 4;
+			ParserItem r2; r2.isToken = true;r2.rule = "equal";r2.token = "="; r2.ruleID = 4;
+			ParserItem r1; r1.isToken = false;r1.rule = "y1";r1.row = 4; r1.ruleID = 4;
 			returnRules.push_back(r1);returnRules.push_back(r2);returnRules.push_back(r3);//inverted to fix push order
 		}
 		break;
 		case 5:
 		{
-			ParserItem r1; r1.isToken = false;r1.rule = "s_out";r1.row = 5;
+			ParserItem r1; r1.isToken = false; r1.rule = "s_out"; r1.row = 5; r1.ruleID = 5;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 6:
 		{
-			ParserItem r1; r1.isToken = false;r1.rule = "e";r1.row = 8;
+			ParserItem r1; r1.isToken = false; r1.rule = "e"; r1.row = 8; r1.ruleID = 6;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 7:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "kwdinput";r1.token = "input";
+			ParserItem r1; r1.isToken = true;r1.rule = "kwdinput";r1.token = "input"; r1.ruleID = 7;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 8:
 		{
-			ParserItem r4;r4.isToken = true;r4.rule = "kwdprint";r4.token = "print";
-			ParserItem r3; r3.isToken = true;r3.rule = "paren1"; r3.token = "(";
-			ParserItem r2; r2.isToken = false;r2.rule = "elist";r2.row = 6;
-			ParserItem r1; r1.isToken = true;r1.rule = "paren2"; r1.token = ")";
+			ParserItem r4;r4.isToken = true;r4.rule = "kwdprint";r4.token = "print"; r4.ruleID = 8;
+			ParserItem r3; r3.isToken = true;r3.rule = "paren1"; r3.token = "("; r3.ruleID = 8;
+			ParserItem r2; r2.isToken = false;r2.rule = "elist";r2.row = 6; r2.ruleID = 8;
+			ParserItem r1; r1.isToken = true;r1.rule = "paren2"; r1.token = ")"; r1.ruleID = 8;
 			returnRules.push_back(r1); returnRules.push_back(r2);returnRules.push_back(r3);returnRules.push_back(r4);//inverted to fix push order
 		}
 		break;
@@ -374,15 +392,15 @@ public:
 		{
 
 			
-			ParserItem r2; r2.isToken = false;r2.rule = "e";r2.row = 8;
-			ParserItem r1; r1.isToken = false;r1.rule = "elist2";r1.row = 7;
+			ParserItem r2; r2.isToken = false; r2.rule = "e"; r2.row = 8; r2.ruleID = 9;
+			ParserItem r1; r1.isToken = false; r1.rule = "elist2"; r1.row = 7; r1.ruleID = 9;
 			returnRules.push_back(r1);returnRules.push_back(r2); //inverted to fix push order
 		}
 		break;
 		case 10:
 		{
 
-			ParserItem r1; r1.isToken = false;r1.rule = "eps";
+			ParserItem r1; r1.isToken = false; r1.rule = "eps"; r1.ruleID = 10;
 			returnRules.push_back(r1);
 		}
 		break;
@@ -390,8 +408,8 @@ public:
 		{
 
 			
-			ParserItem r2; r2.isToken = true;r2.rule = "comma"; r2.token = ",";
-			ParserItem r1; r1.isToken = false;r1.rule = "elist";r1.row = 6;
+			ParserItem r2; r2.isToken = true; r2.rule = "comma"; r2.token = ","; r2.ruleID = 11;
+			ParserItem r1; r1.isToken = false; r1.rule = "elist"; r1.row = 6; r1.ruleID = 11;
 			returnRules.push_back(r1);returnRules.push_back(r2); //inverted to fix push order
 		}
 		break;
@@ -399,8 +417,8 @@ public:
 		{
 
 			
-			ParserItem r2; r2.isToken = false;r2.rule = "t"; r2.row = 10;
-			ParserItem r1; r1.isToken = false;r1.rule = "x1";r1.row = 9;
+			ParserItem r2; r2.isToken = false; r2.rule = "t"; r2.row = 10; r2.ruleID = 12;
+			ParserItem r1; r1.isToken = false; r1.rule = "x1"; r1.row = 9; r2.ruleID = 12;
 			returnRules.push_back(r1);returnRules.push_back(r2);//inverted to fix push order
 		}
 		break;
@@ -408,16 +426,16 @@ public:
 		{
 
 			
-			ParserItem r1; r1.isToken = false;r1.rule = "eps";
+			ParserItem r1; r1.isToken = false; r1.rule = "eps"; r1.ruleID = 13;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 14:
 		{
 
-			ParserItem r3; r3.isToken = false;r3.rule = "opadd"; r3.row = 14;
-			ParserItem r2; r2.isToken = false;r2.rule = "t";r2.row = 10;
-			ParserItem r1; r1.isToken = false;r1.rule = "x1";r1.row = 9;
+			ParserItem r3; r3.isToken = false; r3.rule = "opadd"; r3.row = 14; r3.ruleID = 14;
+			ParserItem r2; r2.isToken = false; r2.rule = "t"; r2.row = 10; r2.ruleID = 14;
+			ParserItem r1; r1.isToken = false; r1.rule = "x1"; r1.row = 9; r1.ruleID = 14;
 			returnRules.push_back(r1);returnRules.push_back(r2);returnRules.push_back(r3); //inverted to fix push order
 		}
 		break;
@@ -425,94 +443,94 @@ public:
 		{
 
 			
-			ParserItem r2; r2.isToken = false;r2.rule = "f"; r2.row = 12;
-			ParserItem r1; r1.isToken = false;r1.rule = "x2";r1.row = 11;
+			ParserItem r2; r2.isToken = false; r2.rule = "f"; r2.row = 12; r2.ruleID = 15;
+			ParserItem r1; r1.isToken = false; r1.rule = "x2"; r1.row = 11; r1.ruleID = 15;
 			returnRules.push_back(r1);returnRules.push_back(r2); //inverted to fix push order
 		}
 		break;
 		case 16:
 		{
 
-			ParserItem r1; r1.isToken = false;r1.rule = "eps";
+			ParserItem r1; r1.isToken = false; r1.rule = "eps"; r1.ruleID = 16;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 17:
 		{
 
-			ParserItem r3; r3.isToken = false;r3.rule = "opmul"; r3.row = 15;
-			ParserItem r2; r2.isToken = false;r2.rule = "f";r2.row = 12;
-			ParserItem r1; r1.isToken = false;r1.rule = "x2"; r1.row = 11;
+			ParserItem r3; r3.isToken = false; r3.rule = "opmul"; r3.row = 15; r3.ruleID = 17;
+			ParserItem r2; r2.isToken = false; r2.rule = "f"; r2.row = 12; r2.ruleID = 17;
+			ParserItem r1; r1.isToken = false; r1.rule = "x2"; r1.row = 11; r1.ruleID = 17;
 			returnRules.push_back(r1);returnRules.push_back(r2);returnRules.push_back(r3);//inverted to fix push order
 		}
 		break;
 		case 18:
 		{
 
-			ParserItem r1; r1.isToken = false;r1.rule = "fatom"; r1.row = 13;
+			ParserItem r1; r1.isToken = false; r1.rule = "fatom"; r1.row = 13; r1.ruleID = 18;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 19:
 		{
 
-			ParserItem r3; r3.isToken = true;r3.rule = "paren1"; r3.token = "(";
-			ParserItem r2; r2.isToken = false;r2.rule = "e";r2.row = 8;
-			ParserItem r1; r1.isToken = true;r1.rule = "paren2"; r1.token = ")";
+			ParserItem r3; r3.isToken = true; r3.rule = "paren1"; r3.token = "("; r3.ruleID = 19;
+			ParserItem r2; r2.isToken = false; r2.rule = "e"; r2.row = 8; r2.ruleID = 19;
+			ParserItem r1; r1.isToken = true; r1.rule = "paren2"; r1.token = ")"; r1.ruleID = 19;
 			returnRules.push_back(r1);returnRules.push_back(r2);returnRules.push_back(r3); //inverted to fix push order
 		}
 		break;
 		case 20:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "id";r1.token = "id";
+			ParserItem r1; r1.isToken = true; r1.rule = "id"; r1.token = "id"; r1.ruleID = 20;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 21:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "int";r1.token = "int";
+			ParserItem r1; r1.isToken = true; r1.rule = "int"; r1.token = "int"; r1.ruleID = 21;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 22:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "float";r1.token = "float";
+			ParserItem r1; r1.isToken = true;r1.rule = "float";r1.token = "float"; r1.ruleID = 22;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 23:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "string";r1.token = "string";
+			ParserItem r1; r1.isToken = true;r1.rule = "string";r1.token = "string"; r1.ruleID = 23;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 24:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "plus";r1.token = "+";
+			ParserItem r1; r1.isToken = true;r1.rule = "plus";r1.token = "+"; r1.ruleID = 24;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 25:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "minus";r1.token = "-";
+			ParserItem r1; r1.isToken = true;r1.rule = "minus";r1.token = "-"; r1.ruleID = 25;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 26:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "aster";r1.token = "*";
+			ParserItem r1; r1.isToken = true;r1.rule = "aster";r1.token = "*"; r1.ruleID = 26;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 27:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "slash";r1.token = "/";
+			ParserItem r1; r1.isToken = true;r1.rule = "slash";r1.token = "/"; r1.ruleID = 27;
 			returnRules.push_back(r1);
 		}
 		break;
 		case 28:
 		{
-			ParserItem r1; r1.isToken = true;r1.rule = "caret";r1.token = "^";
+			ParserItem r1; r1.isToken = true;r1.rule = "caret";r1.token = "^"; r1.ruleID = 28;
 			returnRules.push_back(r1);
 		}
 		break;
